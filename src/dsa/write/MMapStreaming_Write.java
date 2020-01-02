@@ -1,4 +1,4 @@
-package dsa.input;
+package dsa.write;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,7 +13,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 
-public class MMapStreaming_Read implements StreamReader{
+public class MMapStreaming_Write implements StreamWriter{
 	private String filename;
 	private FileReader file;
 	private String line = "";
@@ -33,7 +33,7 @@ public class MMapStreaming_Read implements StreamReader{
 	CharBuffer charBuffer;
 	CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
 	
-	public MMapStreaming_Read(String p_filename, int p_bufferSize){
+	public MMapStreaming_Write(String p_filename, int p_bufferSize){
 		filename = p_filename;
 		bufferSize = p_bufferSize;		
 	}
@@ -56,7 +56,7 @@ public class MMapStreaming_Read implements StreamReader{
 	}
 	
 	@Override
-	public String stream_readLine() throws IOException{
+	public void stream_writeLine(String line_) throws IOException{
 		line = "";			
 		while(true){
 			if(readc){
@@ -73,14 +73,12 @@ public class MMapStreaming_Read implements StreamReader{
                     		fillline = false;
                     	}
                         currentPosition = i+1;
-                        return line;
                     }
 				}
 				readc = false;
 			}else{
 				if(!first){
 					if (bufferSize*(n_streams-1) + currentPosition>= filesize){
-						return "";
 					}
 					else{
 						if (fillline){
@@ -109,13 +107,6 @@ public class MMapStreaming_Read implements StreamReader{
 		
 	}
 	
-	@Override
-	public boolean stream_eof(){
-		if(line == ""){
-			return true;
-		}
-		else return false;
-	}
 	
 	@Override
 	public void stream_close() throws IOException{
@@ -125,9 +116,5 @@ public class MMapStreaming_Read implements StreamReader{
 	@Override
 	public String getType(){
 		return typeOutput;
-	}
-	
-	@Override
-	public void seek(long position) throws IOException{
 	}
 }

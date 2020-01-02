@@ -1,4 +1,4 @@
-package dsa.input;
+package dsa.read;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

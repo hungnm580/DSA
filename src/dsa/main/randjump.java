@@ -2,7 +2,7 @@ package dsa.main;
 
 import java.io.IOException;
 
-import dsa.experiment.Experiments;
+import dsa.experiment.Experiments_Read;
 
 public class randjump {
 
@@ -21,7 +21,7 @@ public class randjump {
 		
 		for (String f:inputfiles){
 			String filename = folder + f;
-			Experiments exp = new Experiments(filename);
+			Experiments_Read exp = new Experiments_Read(filename);
 			exp.generateRandomTests(numberRandomIterations);
 			simulations = exp.RandomJumpStreaming_Read(1,0);
 			simulations = exp.RandomJumpStreaming_Read(2,0);

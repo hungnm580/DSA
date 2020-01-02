@@ -1,42 +1,41 @@
-package dsa.input;
+package dsa.read;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
-public class CharacterStreaming_Read implements StreamReader{
+public class LineStreaming_Read implements StreamReader{
 
 	private String filename;
 	private FileReader file;
 	private String line = "";
-	private String typeOutput = "Character Streaming: ";
+	private String typeOutput = "Line Streaming: ";
+	private BufferedReader buffer ;
+	private RandomAccessFile rand;
 	
-	public CharacterStreaming_Read(String p_filename){
+	public LineStreaming_Read(String p_filename){
 		filename = p_filename;
 	}
 	
 	@Override
 	public void stream_openFile() throws FileNotFoundException{
 		file = new FileReader(new File(filename));
+		buffer = new BufferedReader( file );
+		rand = new RandomAccessFile(filename,"r");
 	}
 	
 	@Override
 	public String stream_readLine() throws IOException{
-		line = "";
-		int c;
-		while((c = file.read())!=-1){
-			if(c == '\n'){
-				return line ;
-			}
-			line += (char)c;
-		}
+		line = buffer.readLine();
 		return line;
 	}
 	
 	@Override
 	public boolean stream_eof(){
-		if(line == ""){
+		if(line == null){
 			return true;
 		}
 		else return false;
@@ -45,20 +44,18 @@ public class CharacterStreaming_Read implements StreamReader{
 	@Override
 	public void stream_close() throws IOException{
 		file.close();
+		rand.close();
+		buffer.close();
 	}
 	
 	@Override
 	public String getType(){
 		return typeOutput;
 	}
-	
-	@Override
+
 	public void seek(long position) throws IOException{
-		
 		stream_close();
 		stream_openFile();
-		file.skip(position);
+		buffer.skip(position);			
 	}
-
-	
 }

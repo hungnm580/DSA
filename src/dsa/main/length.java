@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import dsa.experiment.Experiments;
+import dsa.experiment.Experiments_Read;
 
 public class length {
 	
@@ -30,7 +30,7 @@ public class length {
 			String filename = folder + f;
 			for (int i = 0 ; i< numsimulations; i++){
 				//Experiment container
-				Experiments exp = new Experiments(filename);
+				Experiments_Read exp = new Experiments_Read(filename);
 				//Stream by Character
 				simulations = exp.SequentialStreaming_Read(1,0);
 				writer.write(f + "," + i + "," + "RL_Character" + "," + "0" + "," + simulations + '\n');

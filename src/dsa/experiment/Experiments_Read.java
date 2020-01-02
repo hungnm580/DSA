@@ -5,17 +5,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Random;
 
-import dsa.input.BufferStreaming_Read;
-import dsa.input.CharacterStreaming_Read;
-import dsa.input.LineStreaming_Read;
-import dsa.input.MMapStreaming_Read;
-import dsa.input.StreamReader;
+import dsa.read.BufferStreaming_Read;
+import dsa.read.CharacterStreaming_Read;
+import dsa.read.LineStreaming_Read;
+import dsa.read.MMapStreaming_Read;
+import dsa.read.StreamReader;
 
-public class Experiments {
+public class Experiments_Read {
 	private String filename;
 	private long[] randomNumbers;
 	
-	public Experiments(String p_filename){
+	public Experiments_Read(String p_filename){
 		filename=p_filename;
 	}
 	
@@ -119,6 +119,23 @@ public class Experiments {
 			Random rand = new Random(); 
 			randomNumbers[i] = rand.nextInt(filesize);
 		}
+	}
+	
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		String filename = "G:\\Documentos\\MasterDegree\\BDMA\\" +
+				"Classes\\Data system Arquitectures\\Project\\Data\\cast_info.csv";
+		//cast_info
+		int numsimulations = 5;
+		long[][] simulations = new long[4][numsimulations];
+		for (int i = 0 ; i< numsimulations; i++){
+			Experiments_Read exp = new Experiments_Read(filename);
+			simulations[0][i] = exp.SequentialStreaming_Read(1,0);
+			simulations[1][i] = exp.SequentialStreaming_Read(2,0);
+			simulations[2][i] = exp.SequentialStreaming_Read(3,8192);
+			simulations[3][i] = exp.SequentialStreaming_Read(4,10000000);
+		}
+		
 	}
 	
 }

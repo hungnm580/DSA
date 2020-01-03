@@ -33,8 +33,8 @@ public class LineStreaming_Write implements StreamWriter{
 	
 	@Override
 	public void stream_close() throws IOException{
-		writer.close();
 		buffer.close();
+		writer.close();
 	}
 	
 	@Override

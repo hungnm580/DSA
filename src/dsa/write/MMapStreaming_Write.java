@@ -14,103 +14,60 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 
 public class MMapStreaming_Write implements StreamWriter{
-	private String filename;
-	private FileReader file;
-	private String line = "";
+	private String inputFilePath;
+	private String outputFilePath;
 	private String typeOutput = "MMAP Streaming: ";
-	private BufferedReader buffer ;
 	private int bufferSize; 
 	private long filesize;
-	private int currentPosition = 0;
 	private FileChannel fileChannel;
 	private MappedByteBuffer mapbuffer;
-	private char[] cb;
-	private int temp_buffer;
-	private int n_streams = 0;
-	boolean readc = false;
-	boolean first = true;
-	boolean fillline = false;
 	CharBuffer charBuffer;
 	CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
 	
-	public MMapStreaming_Write(String p_filename, int p_bufferSize){
-		filename = p_filename;
+	int currentPosition = 0;
+	
+	
+	public MMapStreaming_Write(String inputFilePath_, String outputFilePath_, int p_bufferSize){
+		inputFilePath = inputFilePath_;
+		outputFilePath = outputFilePath_;
 		bufferSize = p_bufferSize;		
 	}
 	
 	@Override
 	public void stream_openFile() throws FileNotFoundException{
-		File f = new File(filename);
-		filesize = f.length();
-		file = new FileReader(f);
+		File input = new File(inputFilePath);
+		File output = new File(outputFilePath);
+		
+		filesize = input.length();
 		bufferSize = (int) Math.min(filesize,bufferSize);
-		//buffer = new BufferedReader( file , bufferSize);
-		RandomAccessFile randomAccessFile = new RandomAccessFile(f, "r");
+		
+		RandomAccessFile randomAccessFile = new RandomAccessFile(output, "rw");
 		fileChannel = randomAccessFile.getChannel();
 		try{
-		mapbuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, 0);
-		} 
+			mapbuffer = fileChannel.map(FileChannel.MapMode.READ_WRITE, 0, bufferSize);
+		}
 		catch (Exception e){
 		}
-		cb = new char[bufferSize];
 	}
 	
 	@Override
 	public void stream_writeLine(String line_) throws IOException{
-		line = "";			
-		while(true){
-			if(readc){
-				int i;
-				char c;
-				for(i = currentPosition;i<temp_buffer;i++){
-					c = cb[i];
-                    if ((c == '\n')) {
-                    	if(!fillline){
-                    		line = new String(cb, currentPosition, i - currentPosition);
-                    	}
-                    	else{
-                    		line += new String(cb, currentPosition, i - currentPosition);
-                    		fillline = false;
-                    	}
-                        currentPosition = i+1;
-                    }
-				}
-				readc = false;
-			}else{
-				if(!first){
-					if (bufferSize*(n_streams-1) + currentPosition>= filesize){
-					}
-					else{
-						if (fillline){
-							line += new String(cb, currentPosition, temp_buffer - currentPosition);
-						}
-						else{
-							line = new String(cb, currentPosition, temp_buffer - currentPosition);
-						}
-						fillline = true;
-					}
-				}
-				else{
-					first = false;
-				}
-				temp_buffer = (int)Math.min(filesize - bufferSize*n_streams , bufferSize);
-				currentPosition = 0;
-				n_streams++;
-				mapbuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, (bufferSize * (n_streams-1)), temp_buffer);
-				for (int i = 0; i<temp_buffer; i++ ){
-					cb[i] = (char)mapbuffer.get();
-				}
-				//cb = charBuffer.array();
-				readc = true;
-			} 
-		}
+//		if(mapbuffer.remaining()<line_.getBytes().length) {
+//			currentPosition = mapbuffer.position();
+//			int size = mapbuffer.capacity() - mapbuffer.remaining();
+//			mapbuffer.load();
+//			mapbuffer.clear();
+//			mapbuffer = fileChannel.map(FileChannel.MapMode.READ_WRITE, currentPosition+size, bufferSize);
+//		}
+		mapbuffer.put(line_.getBytes());
 		
 	}
 	
 	
 	@Override
 	public void stream_close() throws IOException{
-		file.close();
+		fileChannel.close();
+		mapbuffer.clear();
 	}
 	
 	@Override

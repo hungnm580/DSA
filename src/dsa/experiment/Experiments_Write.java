@@ -1,11 +1,13 @@
 package dsa.experiment;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
 import dsa.read.LineStreaming_Read;
 import dsa.write.*;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class Experiments_Write {
 	private String inputFilePath;
@@ -71,6 +73,25 @@ public class Experiments_Write {
 		return timeElapsed;
 	}
 	
+	public static boolean checkSum(String inputFilePath, String outputFilePath) {
+		String inputMD5 = "input";
+		String ouputMD5 = "output";
+		try {
+			inputMD5 = DigestUtils.md5Hex(new FileInputStream(inputFilePath));
+			ouputMD5 = DigestUtils.md5Hex(new FileInputStream(outputFilePath));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		  return inputMD5.equals(ouputMD5);
+		  	
+
+	}
+	
 	public static void main(String[] args) {
 		
 		String inputFilePath = "/home/hungnm/cast_info.csv";
@@ -85,16 +106,25 @@ public class Experiments_Write {
 				String[] cmd = { "sh", "/home/hungnm/clearCache.sh"};
 				Process p = Runtime.getRuntime().exec(cmd); 
 				
-//				simulations[0][i] = exp.SequentialStreaming_Write(1,0);
-//				simulations[1][i] = exp.SequentialStreaming_Write(2,0);
-//				simulations[2][i] = exp.SequentialStreaming_Write(3,100000000);
-				simulations[3][i] = exp.SequentialStreaming_Write(4,2000000000);
+				simulations[0][i] = exp.SequentialStreaming_Write(1,0);
+				p = Runtime.getRuntime().exec(cmd); 
+
+				simulations[1][i] = exp.SequentialStreaming_Write(2,0);
+				p = Runtime.getRuntime().exec(cmd); 
+
+				simulations[2][i] = exp.SequentialStreaming_Write(3,2048);
+				p = Runtime.getRuntime().exec(cmd); 
+
+				simulations[3][i] = exp.SequentialStreaming_Write(4,2048*2048);
+				p = Runtime.getRuntime().exec(cmd); 
+
 
 //				p = Runtime.getRuntime().exec(cmd);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}	
+		System.out.print(checkSum(inputFilePath, outputFilePath));
 	}
 	
 }

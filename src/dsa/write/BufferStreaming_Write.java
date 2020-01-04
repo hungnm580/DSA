@@ -11,7 +11,6 @@ public class BufferStreaming_Write implements StreamWriter{
 	private String inputFilePath;
 	private String outputFilePath;
 	private FileWriter fw;
-	private String line = "";
 	private String typeOutput = "Buffer Streaming: ";
 	private BufferedWriter buffer ;
 	private int bufferSize; 
@@ -27,6 +26,7 @@ public class BufferStreaming_Write implements StreamWriter{
 	public void stream_openFile() throws FileNotFoundException{
 		File input = new File(inputFilePath);
 		File output = new File(outputFilePath);
+		
 		filesize = input.length();
 		bufferSize = (int) Math.min(filesize,bufferSize);
 		
@@ -39,14 +39,14 @@ public class BufferStreaming_Write implements StreamWriter{
 	}
 	
 	@Override
-	public void stream_writeLine(String line_) throws IOException{
-		buffer.write(line);
+	public void stream_writeLine(String line) throws IOException{
+		buffer.write(line + "\n");
 	}
 		
 	@Override
 	public void stream_close() throws IOException{
-		fw.close();
 		buffer.close();
+		fw.close();
 	}
 	
 	@Override

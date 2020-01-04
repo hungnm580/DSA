@@ -28,7 +28,7 @@ public class CharacterStreaming_Write implements StreamWriter{
 	@Override
 	public void stream_writeLine(String line_) throws IOException{
 		line = line_;
-		writer.write(line);
+		writer.write(line + "\n");
 	}
 	
 	@Override

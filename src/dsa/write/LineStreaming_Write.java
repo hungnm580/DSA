@@ -20,7 +20,7 @@ public class LineStreaming_Write implements StreamWriter{
 	public void stream_openFile() throws FileNotFoundException{
 		try {
 			writer = new FileWriter(filename);
-			buffer = new BufferedWriter(writer,  100 * 1024);
+			buffer = new BufferedWriter(writer);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -28,7 +28,7 @@ public class LineStreaming_Write implements StreamWriter{
 	
 	@Override
 	public void stream_writeLine(String line) throws IOException{
-		buffer.write(line);
+		buffer.write(line+ "\n");
 	}	
 	
 	@Override

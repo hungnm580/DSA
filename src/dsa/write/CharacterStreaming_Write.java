@@ -28,7 +28,14 @@ public class CharacterStreaming_Write implements StreamWriter{
 	@Override
 	public void stream_writeLine(String line_) throws IOException{
 		line = line_;
-		writer.write(line + "\n");
+		if(line==null)
+			return;
+		char c;
+		for(int i=0; i<line.length(); i++) {
+			c = line.charAt(i);
+			writer.write(c);
+		}
+		writer.write("\n");
 	}
 	
 	@Override

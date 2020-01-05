@@ -22,7 +22,8 @@ public class RRMerge {
 	
 	//Readers array
 	MMapStreaming_Read[] readers = new MMapStreaming_Read[numFiles];
-
+//	LineStreaming_Read[] readers = new LineStreaming_Read[numFiles];
+	
 	public RRMerge(){
 	}
 	
@@ -114,7 +115,7 @@ public class RRMerge {
 	
 	public static void main(String[] args) {	
 		//Multiple tests to get an average time
-		int numsimulations = 1;
+		int numsimulations = 5;
 		
 		//Different buffer sizes.
 		int[] bufferSizeArray = {1024,4096,8192,16384,65536,524288,4194304,10000000};  
@@ -128,8 +129,11 @@ public class RRMerge {
 		File resultsFile =new File(folder + "results.csv");
 	    BufferedWriter writer = new BufferedWriter(new FileWriter(resultsFile));
 	    writer.write("Simulation, Reading type, Writing type, Buffer size, Execution time\n");
+	    
 	    //Print input files names
-	    System.out.println(files);
+	    for(int i=0; i<numFiles; i++) {
+		    System.out.println(files[i]);
+		}
 	    
 		for (int i = 0 ; i< numsimulations; i++){
 			//RRMerge Experiment 

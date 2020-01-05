@@ -22,8 +22,9 @@ public class length {
 		long simulations = 0;
 		
 		//Save times of execution in results.csv
-		File resultsFile =new File(folder + "results.csv");
+		File resultsFile =new File(folder + "results_2.csv");
 	    BufferedWriter writer = new BufferedWriter(new FileWriter(resultsFile));
+	    writer.write("file,simulation,type,buffersize,time\n");
 	    
 	    //Sequential experimentation
 		for (String f:inputfiles){

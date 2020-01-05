@@ -5,17 +5,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Random;
 
-import dsa.read.BufferStreaming_Read;
-import dsa.read.CharacterStreaming_Read;
-import dsa.read.LineStreaming_Read;
-import dsa.read.MMapStreaming_Read;
-import dsa.read.StreamReader;
+import dsa.input.BufferStreaming_Read;
+import dsa.input.CharacterStreaming_Read;
+import dsa.input.LineStreaming_Read;
+import dsa.input.MMapStreaming_Read;
+import dsa.input.StreamReader;
 
-public class Experiments_Read {
+public class Experiments {
 	private String filename;
 	private long[] randomNumbers;
 	
-	public Experiments_Read(String p_filename){
+	public Experiments(String p_filename){
 		filename=p_filename;
 	}
 	
@@ -95,7 +95,7 @@ public class Experiments_Read {
 			input.seek(randomNumbers[i]);
 			
 			String line = input.stream_readLine();
-			//System.out.println("Position: " + randomNumbers[i] + "  Line : " + line);
+			//System.out.println("Line : " + line);
 			counter += line.length();
 		}
 		

@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.nio.CharBuffer;
 import java.util.ArrayDeque;
@@ -17,10 +18,8 @@ import java.util.Arrays;
 public class BufferStreaming_Read implements StreamReader{
 
 	private String filename;
-	private FileReader file;
 	private String line = "";
 	private String typeOutput = "Buffer Streaming: ";
-	private BufferedReader buffer ;
 	private int bufferSize; 
 	private long filesize;
 	private int currentPosition = 0;
@@ -30,6 +29,10 @@ public class BufferStreaming_Read implements StreamReader{
 	boolean readc = false;
 	boolean first = true;
 	boolean fillline = false;
+	private RandomAccessFile rand;
+	private FileInputStream fis;
+	private BufferedInputStream bis;
+	private byte[] bb;
 	
 	public BufferStreaming_Read(String p_filename, int p_bufferSize){
 		filename = p_filename;
@@ -40,10 +43,18 @@ public class BufferStreaming_Read implements StreamReader{
 	public void stream_openFile() throws FileNotFoundException{
 		File f = new File(filename);
 		filesize = f.length();
-		file = new FileReader(f);
 		bufferSize = (int) Math.min(filesize,bufferSize);
-		buffer = new BufferedReader( file , bufferSize);
+		rand = new RandomAccessFile(filename,"r");
 		cb = new char[bufferSize];
+		bb = new byte[bufferSize];
+		try {
+			fis = new FileInputStream(rand.getFD());
+			bis = new BufferedInputStream(fis);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	@Override
@@ -91,7 +102,10 @@ public class BufferStreaming_Read implements StreamReader{
 				temp_buffer = (int)Math.min(filesize - bufferSize*n_streams , bufferSize);
 				currentPosition = 0;
 				n_streams++;
-				buffer.read(cb);	
+				bis.read(bb);
+				for (int i = 0; i<temp_buffer; i++ ){
+					cb[i] = (char)bb[i];
+				}
 				readc = true;
 			} 
 		}
@@ -107,7 +121,7 @@ public class BufferStreaming_Read implements StreamReader{
 	
 	@Override
 	public void stream_close() throws IOException{
-		file.close();
+		rand.close();
 	}
 	
 	@Override
@@ -117,5 +131,20 @@ public class BufferStreaming_Read implements StreamReader{
 	
 	@Override
 	public void seek(long position) throws IOException{
+		int n_streams_new = (int)(position/bufferSize);
+		currentPosition = (int)position % bufferSize;
+		if (n_streams_new+1 != n_streams){
+			rand.seek(n_streams_new*bufferSize);
+			n_streams = n_streams_new;
+			first = false;
+			temp_buffer = (int)Math.min(filesize - bufferSize*n_streams , bufferSize);
+			bis = new BufferedInputStream(fis);
+			bis.read(bb);
+			for (int i = 0; i<temp_buffer; i++ ){
+				cb[i] = (char)bb[i];
+			}
+			n_streams ++;
+			readc = true;
+		}
 	}
 }

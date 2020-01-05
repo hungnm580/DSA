@@ -18,7 +18,6 @@ public class MMapStreaming_Read implements StreamReader{
 	private FileReader file;
 	private String line = "";
 	private String typeOutput = "MMAP Streaming: ";
-	private BufferedReader buffer ;
 	private int bufferSize; 
 	private long filesize;
 	private int currentPosition = 0;
@@ -30,8 +29,7 @@ public class MMapStreaming_Read implements StreamReader{
 	boolean readc = false;
 	boolean first = true;
 	boolean fillline = false;
-	CharBuffer charBuffer;
-	CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+	RandomAccessFile randomAccessFile;
 	
 	public MMapStreaming_Read(String p_filename, int p_bufferSize){
 		filename = p_filename;
@@ -45,7 +43,7 @@ public class MMapStreaming_Read implements StreamReader{
 		file = new FileReader(f);
 		bufferSize = (int) Math.min(filesize,bufferSize);
 		//buffer = new BufferedReader( file , bufferSize);
-		RandomAccessFile randomAccessFile = new RandomAccessFile(f, "r");
+		randomAccessFile = new RandomAccessFile(f, "r");
 		fileChannel = randomAccessFile.getChannel();
 		try{
 		mapbuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, 0);
@@ -120,6 +118,8 @@ public class MMapStreaming_Read implements StreamReader{
 	@Override
 	public void stream_close() throws IOException{
 		file.close();
+		randomAccessFile.close();
+		fileChannel.close();
 	}
 	
 	@Override
@@ -129,5 +129,25 @@ public class MMapStreaming_Read implements StreamReader{
 	
 	@Override
 	public void seek(long position) throws IOException{
+		
+		int n_streams_new = (int)(position/bufferSize);
+		currentPosition = (int)position % bufferSize;
+		if (n_streams_new+1 != n_streams){
+			n_streams = n_streams_new;
+			stream_close();
+			stream_openFile();
+			first = false;
+			temp_buffer = (int)Math.min(filesize - bufferSize*n_streams , bufferSize);
+			n_streams ++;
+			mapbuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, (bufferSize * (n_streams-1)), temp_buffer);
+			for (int i = 0; i<temp_buffer; i++ ){
+				cb[i] = (char)mapbuffer.get();
+			}
+			readc = true;
+		}
+	}
+	
+	public String getFileName(){
+		return file.toString();
 	}
 }

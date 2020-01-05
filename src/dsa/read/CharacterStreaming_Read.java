@@ -4,13 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 public class CharacterStreaming_Read implements StreamReader{
 
 	private String filename;
-	private FileReader file;
+	//private FileReader file;
 	private String line = "";
 	private String typeOutput = "Character Streaming: ";
+	private RandomAccessFile file;
 	
 	public CharacterStreaming_Read(String p_filename){
 		filename = p_filename;
@@ -18,7 +20,8 @@ public class CharacterStreaming_Read implements StreamReader{
 	
 	@Override
 	public void stream_openFile() throws FileNotFoundException{
-		file = new FileReader(new File(filename));
+		//file = new FileReader(new File(filename));
+		file = new RandomAccessFile(filename,"r");
 	}
 	
 	@Override
@@ -54,10 +57,10 @@ public class CharacterStreaming_Read implements StreamReader{
 	
 	@Override
 	public void seek(long position) throws IOException{
-		
-		stream_close();
-		stream_openFile();
-		file.skip(position);
+		file.seek(position);
+		//stream_close();
+		//stream_openFile();
+		//file.skip(position);
 	}
 
 	
